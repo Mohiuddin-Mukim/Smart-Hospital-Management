@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Doctors | CareSync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+
+<div id="navbar-container"></div>
+
+<section class="bg-blue-600 py-16 text-white text-center">
+    <h1 class="text-4xl font-bold">আমাদের বিশেষজ্ঞ ডাক্তারগণ</h1>
+    <p class="mt-4 text-blue-100">আপনার সমস্যার জন্য সঠিক বিশেষজ্ঞ বেছে নিন</p>
+</section>
+
+<div class="max-w-7xl mx-auto px-6 -mt-8">
+    <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row gap-4">
+        <input type="text" id="doctorSearch" placeholder="ডাক্তারের নাম বা স্পেশালিটি খুঁজুন..."
+               class="flex-1 p-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="specialtyFilter" class="p-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">সব স্পেশালিটি</option>
+            <option value="Cardiologist">Cardiologist</option>
+            <option value="Medicine">Medicine</option>
+            <option value="Neurologist">Neurologist</option>
+        </select>
+    </div>
+</div>
+
+<main class="max-w-7xl mx-auto px-6 py-12">
+    <div id="doctorList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="col-span-full text-center py-20">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-500">ডাক্তারদের তথ্য লোড হচ্ছে...</p>
+        </div>
+    </div>
+</main>
+
+
+<div id="doctorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100">
+                <i class="fas fa-times text-gray-800"></i>
+            </button>
+            <div id="modalContent" class="p-8">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/doctors.js"></script>
+</body>
+</html>

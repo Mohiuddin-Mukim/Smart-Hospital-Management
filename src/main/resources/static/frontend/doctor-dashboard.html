@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Dashboard | CareSync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-blue-50 flex">
+
+
+
+<aside class="w-64 bg-white shadow-xl min-h-screen p-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-10">CareSync <span class="text-gray-400 text-sm">Doctor</span></h2>
+    <nav class="space-y-4">
+        <a href="javascript:void(0)" onclick="showSection('appointment-section')" id="nav-appointments" class="block p-3 bg-blue-600 text-white rounded-lg">
+            <i class="fas fa-calendar-check mr-2"></i> Appointments
+        </a>
+        <a href="javascript:void(0)" onclick="showSection('schedule-section')" id="nav-schedule" class="block p-3 text-gray-600 hover:bg-blue-50 rounded-lg">
+            <i class="fas fa-clock mr-2"></i> Manage Schedule
+        </a>
+        <a href="#" class="block p-3 text-gray-600 hover:bg-blue-50 rounded-lg">
+            <i class="fas fa-users mr-2"></i> My Patients
+        </a>
+        <a href="javascript:void(0)" onclick="loadProfileData()" id="nav-profile" class="block p-3 text-gray-600 hover:bg-blue-50 rounded-lg">
+            <i class="fas fa-user-edit mr-2"></i> Profile Update
+        </a>
+        <a href="index.html" class="block p-3 text-red-500 mt-20"><i class="fas fa-sign-out-alt mr-2"></i> Back to Home</a>
+    </nav>
+</aside>
+
+
+
+
+<main class="flex-1 p-10">
+    <header class="flex justify-between items-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-800">Welcome,  <span id="doc-name-display">...</span></h1>
+    </header>
+
+    <div id="appointment-section" class="content-section">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-600">
+                <h3 class="text-gray-500 font-medium">Today's Appointments</h3>
+                <p id="today-app-count" class="text-4xl font-bold mt-2">00</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-600">
+                <h3 class="text-gray-500 font-medium">Completed Consultations</h3>
+                <p id="completed-app-count" class="text-4xl font-bold mt-2">00</p>
+            </div>
+        </div>
+
+        <section class="mb-10 bg-white p-8 rounded-2xl shadow-lg border-t-4 border-orange-400">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Pending Requests for Review</h3>
+                <span id="request-count" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold text-sm">0 New</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b">
+                    <tr class="text-gray-500 text-xs uppercase font-bold">
+                        <th class="p-4">Patient</th>
+                        <th class="p-4">Requested Date & Time</th>
+                        <th class="p-4">Reason (বাংলা)</th>
+                        <th class="p-4 text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="pending-requests-table"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-10 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Today's Appointments</h3>
+                <button onclick="fetchDailyAppointments()" class="text-blue-600">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50 border-b">
+                    <tr class="text-gray-600 text-sm uppercase font-bold">
+                        <th class="p-4">Patient</th>
+                        <th class="p-4">Time</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4 text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="doctor-appointment-table"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-blue-100">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h3 class="text-2xl font-bold text-gray-800">Check Appointments by Date</h3>
+                <div class="flex items-center gap-3">
+                    <input type="date" id="search-date-input" class="border rounded-xl px-4 py-2">
+                    <button onclick="fetchAppointmentsBySelectedDate()" class="bg-blue-600 text-white px-6 py-2 rounded-xl">Search</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-blue-50 border-b">
+                    <tr class="text-blue-900 text-sm uppercase font-bold">
+                        <th class="p-4">Patient</th>
+                        <th class="p-4">Time</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4">Reason</th>
+                    </tr>
+                    </thead>
+                    <tbody id="filtered-appointment-table"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div id="schedule-section" class="content-section hidden">
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Set Your Weekly Schedule</h3>
+            <form id="scheduleForm" class="space-y-4">
+                <div id="days-list" class="space-y-8"></div>
+                <button type="submit" class="mt-6 bg-green-600 text-white px-8 py-3 rounded-xl font-bold">
+                    Update Weekly Schedule
+                </button>
+            </form>
+        </section>
+    </div>
+
+
+
+
+
+
+
+    <div id="profile-section" class="content-section hidden">
+        <section class="bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto border-t-4 border-blue-600">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Update My Profile</h2>
+
+            <form id="updateProfileForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" enctype="multipart/form-data">
+                <div class="md:col-span-2 flex items-center gap-4 bg-gray-50 p-4 rounded-xl mb-4">
+                    <img id="profile-img" src="" alt="Doctor Profile" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <p class="text-sm text-gray-500">Current Profile Picture</p>
+                        <input type="file" id="update-docImage" name="file" class="text-sm mt-1">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Full Name</label>
+                    <input type="text" id="update-docName" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Specialization</label>
+                    <input type="text" id="update-docSpecialization" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Degrees</label>
+                    <input type="text" id="update-docDegree" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Designation</label>
+                    <input type="text" id="update-docDesignation" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Phone Number</label>
+                    <input type="text" id="update-docPhone" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Room No</label>
+                    <input type="text" id="update-docRoom" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Consultation Fee (BDT)</label>
+                    <input type="number" id="update-docFee" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Years of Experience</label>
+                    <input type="number" id="update-docExperience" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 5">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">About Me</label>
+                    <textarea id="update-docAbout" rows="4" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Write a short bio..."></textarea>
+                </div>
+
+                <div class="md:col-span-2 mt-4">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Save Changes & Send for Approval
+                    </button>
+                    <p class="text-xs text-orange-600 mt-2 text-center">* Note: Profile updates will reset your verification status until an admin approves it.</p>
+                </div>
+            </form>
+        </section>
+    </div>
+
+
+
+
+
+
+
+
+
+</main>
+
+
+<script src="js/doctor-dashboard.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+
+<div id="prescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 class="text-2xl font-bold text-blue-600"><i class="fas fa-file-prescription mr-2"></i> New Prescription</h2>
+            <button onclick="closePrescriptionModal()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
+        </div>
+
+        <form id="prescriptionForm" class="space-y-6">
+            <input type="hidden" id="modal-appointment-id">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-50 p-4 rounded-xl">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500">Weight (kg)</label>
+                    <input type="text" id="p-weight" class="w-full border-none bg-transparent focus:ring-0 text-lg font-bold" placeholder="70">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500">BP (mmHg)</label>
+                    <input type="text" id="p-bp" class="w-full border-none bg-transparent focus:ring-0 text-lg font-bold" placeholder="120/80">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500">Temp (°F)</label>
+                    <input type="text" id="p-temp" class="w-full border-none bg-transparent focus:ring-0 text-lg font-bold" placeholder="98.4">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500">Pulse</label>
+                    <input type="text" id="p-pulse" class="w-full border-none bg-transparent focus:ring-0 text-lg font-bold" placeholder="72">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block font-bold mb-2">Chief Complaints</label>
+                    <textarea id="p-complaints" class="w-full border rounded-xl p-3 h-24" placeholder="সমস্যাগুলো এখানে লিখুন..."></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold mb-2">Diagnosis</label>
+                    <textarea id="p-diagnosis" class="w-full border rounded-xl p-3 h-24" placeholder="রোগ নির্ণয়..."></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="block font-bold mb-2 text-gray-700 text-sm">Advice (পরামর্শ)</label>
+                    <textarea id="p-advice" class="w-full border rounded-xl p-3 h-24 text-sm" placeholder="যেমন: বেশি করে পানি খাবেন..."></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold mb-2 text-gray-700 text-sm">Notes (অতিরিক্ত নোট)</label>
+                    <textarea id="p-notes" class="w-full border rounded-xl p-3 h-24 text-sm" placeholder="ডাক্তারের জন্য অভ্যন্তরীণ নোট..."></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="block font-bold mb-2 text-gray-700 text-sm">Next Visit Date</label>
+                    <input type="date" id="p-next-visit" class="w-full border rounded-xl p-3 text-sm">
+                </div>
+                <div>
+                    <label class="block font-bold mb-2 text-gray-700 text-sm">Clinical Findings</label>
+                    <input type="text" id="p-findings" class="w-full border rounded-xl p-3 text-sm" placeholder="যেমন: গলা ফোলা, ফুসকুড়ি ইত্যাদি">
+                </div>
+            </div>
+
+
+
+
+
+            <div class="border rounded-2xl p-6 bg-gray-50">
+                <h4 class="font-bold mb-4 text-gray-700">Add Medicines</h4>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="med-search" onkeyup="searchMedicine(this.value)" class="flex-1 border rounded-lg p-2" placeholder="Search medicine name...">
+                </div>
+                <div id="med-results" class="bg-white shadow rounded-lg max-h-40 overflow-y-auto hidden"></div>
+
+                <table class="w-full mt-4 bg-white rounded-lg">
+                    <tbody id="selected-medicines">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-10">
+                <button type="button" onclick="closePrescriptionModal()" class="px-6 py-2 text-gray-500">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700">
+                    Save & Generate PDF
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+</body>
+</html>

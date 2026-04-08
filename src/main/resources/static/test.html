@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Queue Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>Live Queue Status</h1>
+<div id="status" style="font-size: 24px; color: blue;">Waiting for update...</div>
+
+<script>
+    // আপনার ডাটাবেস দেখে সঠিক ডক্টর আইডি দিন (যেমন: ২০)
+    var doctorId = 4;
+
+    // ১. সকেট তৈরি করার সময় সরাসরি অপশন বলে দিন
+    var socket = new SockJS('http://127.0.0.1:8080/ws-queue', null, {
+        transports: ['websocket', 'xhr-streaming', 'xhr-polling']
+    });
+
+    var stompClient = Stomp.over(socket);
+
+    // ২. হার্টবিট সাময়িকভাবে অফ করুন যাতে কানেকশন ড্রপ না হয়
+    stompClient.heartbeat.outgoing = 0;
+    stompClient.heartbeat.incoming = 0;
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected successfully: ' + frame); // এটি আসলে বুঝবেন কাজ শেষ!
+
+        stompClient.subscribe('/topic/doctor/' + doctorId, function (message) {
+            var servingSerial = message.body;
+            document.getElementById('status').innerText = "Now Serving: " + servingSerial;
+        });
+    }, function(error) {
+        console.error('STOMP Error: ' + error);
+    });
+</script>
+</body>
+</html>

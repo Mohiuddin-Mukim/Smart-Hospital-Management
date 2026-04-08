@@ -1,0 +1,1 @@
+ALTER TABLE revinfo ADD COLUMN modified_by VARCHAR(255);
