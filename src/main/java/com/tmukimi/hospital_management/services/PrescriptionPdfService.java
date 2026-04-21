@@ -56,7 +56,7 @@ public class PrescriptionPdfService {
             Document document = new Document(pdf);
             document.setMargins(20, 36, 36, 36);
 
-
+            // --- HEADER SECTION ---
             Table headerTable = new Table(UnitValue.createPercentArray(new float[]{7, 3})).useAllAvailableWidth();
 
             Cell hospitalCell = new Cell().add(new Paragraph("T.MUKIMII HOSPITAL")
@@ -65,8 +65,11 @@ public class PrescriptionPdfService {
                             .setFontSize(9).setItalic().setFontColor(ColorConstants.GRAY))
                     .setBorder(Border.NO_BORDER);
 
-
-            BarcodeQRCode qrCode = new BarcodeQRCode("Prescription-ID: " + prescriptionId + " | Patient: " + prescription.getAppointment().getPatient().getName());
+            // --- DYNAMIC QR CODE FOR VERIFICATION ---
+            // এখানে আপনার অরিজিনাল ডোমেইন নাম বসিয়ে দিন
+            // PDF সার্ভিস ফাইলের ভেতরে এই অংশটি আপডেট করুন
+            String verificationUrl = "http://localhost:8080/api/v1/public/verify/prescription/" + prescription.getVerificationToken();
+            BarcodeQRCode qrCode = new BarcodeQRCode(verificationUrl);
             PdfFormXObject qrCodeObject = qrCode.createFormXObject(ColorConstants.BLACK, pdf);
             Image qrCodeImage = new Image(qrCodeObject).setWidth(60).setHorizontalAlignment(HorizontalAlignment.RIGHT);
 
@@ -76,17 +79,15 @@ public class PrescriptionPdfService {
             headerTable.addCell(qrCell);
             document.add(headerTable);
 
+            document.add(new LineSeparator(new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(1f))
+                    .setMarginTop(5).setFontColor(new DeviceRgb(0, 102, 204)));
 
-            document.add(new LineSeparator(new com.itextpdf.kernel.pdf.canvas.draw.SolidLine(1f)).setMarginTop(5).setFontColor(new DeviceRgb(0, 102, 204)));
-
-
+            // --- DOCTOR & DATE INFO ---
             Table infoGrid = new Table(UnitValue.createPercentArray(new float[]{5, 5})).useAllAvailableWidth().setMarginTop(10);
-
 
             infoGrid.addCell(new Cell().add(new Paragraph("Dr. " + prescription.getAppointment().getDoctor().getName()).setBold().setFontSize(14))
                     .add(new Paragraph(prescription.getAppointment().getDoctor().getSpecialization()).setFontSize(10))
                     .setBorder(Border.NO_BORDER));
-
 
             infoGrid.addCell(new Cell().add(new Paragraph("Date: " + prescription.getCreatedAt().format(DateTimeFormatter.ofPattern("dd MMM, yyyy")))
                             .setTextAlignment(TextAlignment.RIGHT))
@@ -96,7 +97,7 @@ public class PrescriptionPdfService {
             document.add(infoGrid);
             document.add(new Paragraph("\n"));
 
-
+            // --- PATIENT VITALS BAR ---
             Table patientBar = new Table(UnitValue.createPercentArray(new float[]{3, 2, 2, 3})).useAllAvailableWidth();
             patientBar.setBackgroundColor(new DeviceRgb(245, 245, 245)).setPadding(5);
 
@@ -107,12 +108,11 @@ public class PrescriptionPdfService {
 
             document.add(patientBar);
 
-
+            // --- MAIN CONTENT (SIDEBAR + RX) ---
             Table contentTable = new Table(UnitValue.createPercentArray(new float[]{3, 7})).useAllAvailableWidth().setMarginTop(20);
 
-
+            // Left Sidebar (Symptoms/Diagnosis)
             Cell sidebar = new Cell().setBorder(Border.NO_BORDER).setBorderRight(new SolidBorder(ColorConstants.LIGHT_GRAY, 0.5f)).setPaddingRight(10);
-
             sidebar.add(new Paragraph("Symptoms").setBold().setFontSize(11).setFontColor(ColorConstants.DARK_GRAY));
             sidebar.add(new Paragraph(prescription.getChiefComplaints() != null ? prescription.getChiefComplaints() : "N/A").setFontSize(9).setMarginBottom(10));
 
@@ -124,7 +124,7 @@ public class PrescriptionPdfService {
 
             contentTable.addCell(sidebar);
 
-
+            // Right Section (Rx/Medicines)
             Cell rxSection = new Cell().setBorder(Border.NO_BORDER).setPaddingLeft(15);
             rxSection.add(new Paragraph("Rx").setBold().setFontSize(28).setFontColor(new DeviceRgb(0, 102, 204)).setMarginBottom(10));
 
@@ -145,11 +145,11 @@ public class PrescriptionPdfService {
             contentTable.addCell(rxSection);
             document.add(contentTable);
 
-
+            // --- ADVICE ---
             document.add(new Paragraph("\nAdvice:").setBold().setUnderline().setMarginTop(20));
             document.add(new Paragraph(prescription.getAdvice() != null ? prescription.getAdvice() : "General rest and hydration."));
 
-
+            // --- FOOTER & SIGNATURE ---
             Table footerTable = new Table(UnitValue.createPercentArray(new float[]{7, 3})).useAllAvailableWidth().setMarginTop(40);
 
             footerTable.addCell(new Cell().add(new Paragraph("Next Visit: " + (prescription.getNextVisitDate() != null ? prescription.getNextVisitDate() : "As needed"))
@@ -163,7 +163,6 @@ public class PrescriptionPdfService {
             footerTable.addCell(sigCell);
 
             document.add(footerTable);
-
 
             document.add(new Paragraph("\n\nGenerated by T.Mukimii HMS | " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                     .setFontSize(7).setFontColor(ColorConstants.GRAY).setTextAlignment(TextAlignment.CENTER));

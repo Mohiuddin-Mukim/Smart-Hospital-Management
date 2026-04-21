@@ -18,13 +18,21 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
 
 
     Optional<Prescription> findByAppointmentId(Long appointmentId);
+    Optional<Prescription> findByVerificationToken(String token);
 
 
 
 
-    @Query(value = "SELECT pm.medicine_id, COUNT(pm.medicine_id) as count " +
+//    @Query(value = "SELECT pm.medicine_id, COUNT(pm.medicine_id) as count " +
+//            "FROM prescription_medicines_aud pm " +
+//            "GROUP BY pm.medicine_id " +
+//            "ORDER BY count DESC LIMIT 5", nativeQuery = true)
+//    List<Object[]> getTopMedicinesFromAudit();
+
+    @Query(value = "SELECT m.generic_name as name, COUNT(pm.medicine_id) as count " +
             "FROM prescription_medicines_aud pm " +
-            "GROUP BY pm.medicine_id " +
+            "JOIN medicines m ON pm.medicine_id = m.id " +
+            "GROUP BY pm.medicine_id, m.generic_name " +
             "ORDER BY count DESC LIMIT 5", nativeQuery = true)
     List<Object[]> getTopMedicinesFromAudit();
 
