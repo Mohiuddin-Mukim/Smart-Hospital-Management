@@ -79,7 +79,8 @@ public class AdminDashboardController {
         List<Object[]> medicineResults = prescriptionRepository.getTopMedicinesFromAudit();
         List<Map<String, Object>> medicines = medicineResults.stream().map(row -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("name", "ID: " + row[0]);
+//            map.put("name", "ID: " + row[0]);
+            map.put("name", row[0]);
             map.put("count", row[1]);
             return map;
         }).collect(Collectors.toList());

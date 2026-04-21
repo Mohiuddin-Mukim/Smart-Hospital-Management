@@ -6,8 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "prescriptions")
@@ -55,5 +57,11 @@ public class Prescription extends BaseEntity {
 
     @Column(name = "next_visit_date")
     private LocalDate nextVisitDate;
+
+
+    @NotAudited
+    @Column(name = "verification_token", unique = true, nullable = false, updatable = false)
+    private String verificationToken = UUID.randomUUID().toString();
+
 
 }
