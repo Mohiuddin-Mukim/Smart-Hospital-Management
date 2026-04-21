@@ -49,6 +49,7 @@ public class DoctorAppointmentController {
 
     // PATCH http://localhost:8080/api/doctor/appointments/1/status?status=COMPLETED
     @PatchMapping("/{id}/status")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {

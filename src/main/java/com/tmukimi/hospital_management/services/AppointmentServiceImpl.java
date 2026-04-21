@@ -293,6 +293,33 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
 
+    @Override
+    public List<AppointmentResponseDTO> getAllPendingRequestsForAdmin() {
+        // Repository থেকে সব PENDING স্ট্যাটাস ফিল্টার করা
+        List<Appointment> appointments = appointmentRepository.findAllByStatusOrderByIdDesc(AppointmentStatus.PENDING);
+
+        return appointments.stream().map(appt -> {
+            AppointmentResponseDTO dto = new AppointmentResponseDTO();
+            dto.setId(appt.getId());
+            dto.setPatientName(appt.getPatient() != null ? appt.getPatient().getName() : "Unknown");
+            // অ্যাডমিনের জন্য ডক্টরের নাম জানা জরুরি
+            dto.setDoctorName(appt.getDoctor() != null ? appt.getDoctor().getName() : "N/A");
+            dto.setDate(appt.getDate());
+            dto.setTime(appt.getTime());
+            dto.setStatus(appt.getStatus());
+            dto.setReason(appt.getReason());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+
+
 
     @Override
     @Transactional
@@ -316,22 +343,51 @@ public class AppointmentServiceImpl implements AppointmentService {
             else if (newStatus == AppointmentStatus.CANCELLED || newStatus == AppointmentStatus.REJECTED) {
                 if ("SUCCESS".equals(payment.getStatus())) {
 
-                    String refundRemark = (newStatus == AppointmentStatus.CANCELLED)
-                            ? "Cancelled by Patient" : "Rejected by Doctor";
 
-                    boolean isRefunded = sslCommerzService.initiateSSLCommerzRefund(
-                            payment.getProviderReference(),
-                            appointment.getFee(),
-                            refundRemark
-                    );
-
-                    if (isRefunded) {
-                        payment.setStatus("REFUNDED");
-                        payment.setRefundedAt(LocalDateTime.now());
-                        paymentRepository.save(payment);
+                    String refundRemark;
+                    if (newStatus == AppointmentStatus.CANCELLED) {
+                        refundRemark = "Cancelled by Patient";
+                    } else if (newStatus == AppointmentStatus.REJECTED) {
+                        refundRemark = "Rejected by Doctor/Admin";
                     } else {
-                        throw new RuntimeException("Refund failed through SSLCommerz! Please try again later.");
+                        refundRemark = "Refund initiated for status: " + newStatus;
                     }
+
+//                    boolean isRefunded = sslCommerzService.initiateSSLCommerzRefund(
+//                            payment.getProviderReference(),
+//                            appointment.getFee(),
+//                            refundRemark
+//                    );
+//
+//                    if (isRefunded) {
+//                        payment.setStatus("REFUNDED");
+//                        payment.setRefundedAt(LocalDateTime.now());
+//                        paymentRepository.save(payment);
+//                    } else {
+//                        throw new RuntimeException("Refund failed through SSLCommerz! Please try again later.");
+//                    }
+
+                    try {
+                        boolean isRefunded = sslCommerzService.initiateSSLCommerzRefund(
+                                payment.getProviderReference(),
+                                appointment.getFee(),
+                                refundRemark
+                        );
+
+                        if (isRefunded) {
+                            payment.setStatus("REFUNDED");
+                            payment.setRefundedAt(LocalDateTime.now());
+                        } else {
+                            // নতুন কলাম ছাড়াই স্ট্যাটাস দিয়ে মার্ক করে রাখা
+                            payment.setStatus("FAILED");
+                        }
+                    } catch (Exception e) {
+                        // গেটওয়ে এরর হলেও যেন অ্যাপয়েন্টমেন্ট রিজেক্ট হয়
+                        payment.setStatus("FAILED");
+                    }
+
+                    paymentRepository.save(payment);
+
                 }
             }
 

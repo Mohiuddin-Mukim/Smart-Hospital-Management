@@ -52,4 +52,19 @@ public class AdminAppointmentController {
     public ResponseEntity<List<DoctorScheduleRequestDTO>> getDoctorSchedule(@PathVariable Long doctorId) {
         return ResponseEntity.ok(appointmentService.getDoctorScheduleById(doctorId));
     }
+
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllPendingRequests() {
+        return ResponseEntity.ok(appointmentService.getAllPendingRequestsForAdmin());
+    }
+
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> updateStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+        appointmentService.updateAppointmentStatus(id, status);
+        return ResponseEntity.ok("Appointment status updated to " + status + " by Admin");
+    }
 }

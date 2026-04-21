@@ -25,7 +25,7 @@ public interface AppointmentService {
     void updateAppointmentStatus(Long appointmentId, String status);
 
     List<AppointmentResponseDTO> getPendingRequestsForDoctor(String email);
-
+    List<AppointmentResponseDTO> getAllPendingRequestsForAdmin();
 
     /// PUBLIC/GENERAL
     List<DoctorAvailabilityDTO> getAvailableSlots(Long doctorId, LocalDate date);

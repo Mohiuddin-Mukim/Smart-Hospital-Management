@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMedicineAndDiagnosisCharts();
     loadPendingApprovals();
     loadCurrentNotice();
+    fetchAllPendingAppointments();
 
     // ইভেন্ট লিসেনার্স
     document.getElementById('adminScheduleForm')?.addEventListener('submit', saveScheduleByAdmin);
@@ -293,29 +294,26 @@ function getRoleClass(role) {
 
 
 function showSection(sectionId) {
-    // ১. সব মেইন সেকশন এবং ডিভ হাইড করা (Safe approach)
-    // এটি main এর ভেতরের সব সরাসরি চাইল্ডকে হাইড করবে যাদের আইডি আছে
     document.querySelectorAll('main > section, main > div').forEach(s => {
         if (s.id) {
             s.classList.add('hidden');
         }
     });
 
-    // ২. সিলেক্টেড সেকশন শো করা
-    // logic: stats দিলে stats-section দেখাবে, pending-requests দিলে pending-requests-section দেখাবে
+
     const targetId = sectionId.includes('-section') ? sectionId : `${sectionId}-section`;
     const target = document.getElementById(targetId);
 
     if (target) {
         target.classList.remove('hidden');
 
-        // টাইটেল ম্যাপ (আপনার আগের লিস্ট ঠিক আছে, শুধু নতুনটা যোগ করলাম)
         const titles = {
             'stats': 'Dashboard Overview',
             'add-doctor': 'Register New Doctor',
             'manage-schedules': 'Manage Schedules',
             'all-users': 'System Users',
-            'pending-requests': 'Profile Update Requests', // নতুন টাইটেল
+            'pending-requests': 'Profile Update Requests',
+            'appointment-requests': 'Appointment Requests',
             'manage-notice': 'Notice Management'
         };
 
@@ -324,9 +322,10 @@ function showSection(sectionId) {
             titleElement.innerText = titles[sectionId] || 'Dashboard';
         }
 
-        // ডাটা লোড করা (আপনার আগের লজিকগুলো অক্ষুণ্ণ আছে)
+
         if(sectionId === 'all-users') fetchAllUsers();
         if(sectionId === 'pending-requests') loadPendingApprovals();
+        if(sectionId === 'appointment-requests') fetchAllPendingAppointments();
         if(sectionId === 'manage-notice') {
             document.getElementById('manage-notice-section').classList.remove('hidden');
             document.getElementById('section-title').innerText = "Notice Management";
@@ -334,7 +333,7 @@ function showSection(sectionId) {
         }
     }
 
-    // ৩. সাইডবার একটিভ স্টাইল আপডেট (আপনার কোডটিই থাকছে)
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('bg-blue-800', 'border-blue-400');
         link.classList.add('border-transparent');
@@ -726,6 +725,91 @@ async function approveDoctor(requestId) {
         }
     } catch (error) {
         console.error("Error during approval:", error);
+    }
+}
+
+
+
+// --- Appointment Requests Logic ---
+
+async function fetchAllPendingAppointments() {
+    const tableBody = document.getElementById('all-pending-requests-table');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner animate-spin"></i> Loading...</td></tr>`;
+
+    try {
+        const res = await fetch('http://localhost:8080/api/admin/appointments/requests', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch");
+
+        const requests = await res.json();
+
+        // ব্যাজ আপডেট (Sidebar-এ যদি আইডি থাকে)
+        const badge = document.getElementById('appointment-request-badge');
+        if (badge) {
+            if (requests.length > 0) {
+                badge.innerText = requests.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        if (requests.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-gray-400">No pending appointment requests.</td></tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = requests.map(app => `
+            <tr class="border-b hover:bg-gray-50 transition" id="admin-req-row-${app.id}">
+                <td class="p-4 font-medium text-gray-700">${app.patientName}</td>
+                <td class="p-4 text-blue-600 font-semibold">${app.doctorName || 'Assigned Doctor'}</td>
+                <td class="p-4 text-gray-600 text-sm">${app.date} | ${app.time.substring(0, 5)}</td>
+                <td class="p-4 text-gray-500 italic text-xs">${app.reason || 'N/A'}</td>
+                <td class="p-4 flex justify-center gap-2">
+                    <button onclick="handleAdminStatusUpdate(${app.id}, 'BOOKED')" 
+                            class="bg-green-100 text-green-600 p-2 rounded-lg hover:bg-green-600 hover:text-white transition shadow-sm" title="Confirm">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button onclick="handleAdminStatusUpdate(${app.id}, 'REJECTED')" 
+                            class="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm" title="Reject & Refund">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        console.error("Error fetching appointment requests:", e);
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Failed to load data.</td></tr>`;
+    }
+}
+
+async function handleAdminStatusUpdate(appointmentId, status) {
+    const action = status === 'BOOKED' ? 'confirm' : 'reject (and refund)';
+    if (!confirm(`Are you sure you want to ${action} this appointment?`)) return;
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/admin/appointments/${appointmentId}/status?status=${status}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            alert(`Appointment ${status === 'BOOKED' ? 'confirmed' : 'rejected'} successfully!`);
+            const row = document.getElementById(`admin-req-row-${appointmentId}`);
+            if (row) row.remove();
+            fetchAllPendingAppointments();
+            if(typeof updateDashboardStats === 'function') updateDashboardStats();
+        } else {
+            const msg = await response.text();
+            alert("Failed: " + msg);
+        }
+    } catch (error) {
+        console.error("Status update failed:", error);
+        alert("Server connection failed!");
     }
 }
 

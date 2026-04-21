@@ -33,6 +33,12 @@
         <a href="javascript:void(0)" onclick="showSection('manage-notice')" class="nav-link flex items-center px-6 py-3 hover:bg-blue-800 transition border-l-4 border-transparent">
             <i class="fas fa-bullhorn mr-3"></i> Public Notice
         </a>
+
+        <a href="javascript:void(0)" onclick="showSection('appointment-requests')" class="nav-link flex items-center px-6 py-3 hover:bg-blue-800 transition border-l-4 border-transparent">
+            <i class="fas fa-calendar-check mr-3"></i> Appointment Requests
+            <span id="appointment-request-badge" class="ml-2 bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+        </a>
+
         <a href="index.html" class="flex items-center px-6 py-3 text-red-300 hover:bg-red-900 mt-10">
             <i class="fas fa-arrow-left mr-3"></i> Back to Home
         </a>
@@ -260,6 +266,34 @@
             </div>
         </div>
 
+    </section>
+
+
+
+
+    <section id="appointment-requests-section" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-blue-100">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-clock mr-2 text-blue-500"></i> All Pending Appointment Requests
+            </h3>
+            <button onclick="fetchAllPendingAppointments()" class="text-blue-600 hover:rotate-180 transition-all duration-500">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b">
+                <tr class="text-gray-500 text-xs uppercase font-bold">
+                    <th class="p-4">Patient</th>
+                    <th class="p-4">Doctor</th>
+                    <th class="p-4">Date & Time</th>
+                    <th class="p-4">Reason</th>
+                    <th class="p-4 text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="all-pending-requests-table"></tbody>
+            </table>
+        </div>
     </section>
 
 

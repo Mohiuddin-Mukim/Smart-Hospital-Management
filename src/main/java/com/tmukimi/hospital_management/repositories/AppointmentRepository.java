@@ -158,4 +158,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
             @Param("timeout") LocalDateTime timeout
     );
 
+
+
+    // AppointmentRepository.java
+    List<Appointment> findAllByStatusOrderByIdDesc(AppointmentStatus status);
+
 }
