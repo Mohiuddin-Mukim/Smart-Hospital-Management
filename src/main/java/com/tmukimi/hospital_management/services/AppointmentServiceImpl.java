@@ -5,6 +5,7 @@ import com.tmukimi.hospital_management.entities.*;
 import com.tmukimi.hospital_management.enums.AppointmentStatus;
 import com.tmukimi.hospital_management.repositories.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
@@ -104,7 +106,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                     .build();
 
             try {
-                Appointment savedAppt = appointmentRepository.saveAndFlush(appointment);
+                Appointment savedAppt = appointmentRepository.save(appointment);         // changing from saveAndFlush to save
 
 
                 String tranId = "TXN-" + savedAppt.getId() + "-" + System.currentTimeMillis();
@@ -138,7 +140,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 return response;
 
             } catch (Exception e) {
-
+                log.error("Error saving appointment: ", e);
                 if (attempt == 2) {
                     throw new RuntimeException("High traffic! Please try again.");
                 }

@@ -120,13 +120,35 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
 
 
 
+//    @Query("""
+//    SELECT a.time FROM Appointment a
+//    WHERE a.doctor.id = :doctorId
+//      AND a.date = :date
+//      AND a.time >= :startTime
+//      AND a.time <= :endTime
+//      AND (a.status = 'BOOKED' OR a.createdAt >= :timeout)
+//""")
+//    List<LocalTime> findBookedStartTimes(
+//            @Param("doctorId") Long doctorId,
+//            @Param("date") LocalDate date,
+//            @Param("startTime") LocalTime startTime,
+//            @Param("endTime") LocalTime endTime,
+//            @Param("timeout") LocalDateTime timeout
+//    );
+
     @Query("""
     SELECT a.time FROM Appointment a
     WHERE a.doctor.id = :doctorId
       AND a.date = :date
       AND a.time >= :startTime
       AND a.time <= :endTime
-      AND (a.status = 'BOOKED' OR a.createdAt >= :timeout)
+      AND (
+          a.status IN (com.tmukimi.hospital_management.enums.AppointmentStatus.BOOKED, 
+                       com.tmukimi.hospital_management.enums.AppointmentStatus.COMPLETED)
+          OR 
+          (a.status = com.tmukimi.hospital_management.enums.AppointmentStatus.PENDING 
+           AND a.createdAt >= :timeout)
+      )
 """)
     List<LocalTime> findBookedStartTimes(
             @Param("doctorId") Long doctorId,
