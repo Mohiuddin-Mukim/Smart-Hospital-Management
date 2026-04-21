@@ -28,7 +28,7 @@
 <body class="bg-[#f8fafc] flex flex-col md:flex-row min-h-screen">
 
 <div class="md:hidden bg-white p-4 flex justify-between items-center shadow-sm border-b">
-    <a href="index.html" class="text-2xl font-bold text-blue-600 tracking-tight">CareSync</a>
+    <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">T.Mukimii</a>
     <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 focus:outline-none">
         <i class="fas fa-bars text-xl"></i>
     </button>
@@ -36,28 +36,28 @@
 
 <aside id="sidebar" class="sidebar w-64 bg-white border-r border-gray-100 min-h-screen p-6 md:sticky top-0 md:block hidden">
     <a href="index.html" class="text-2xl font-bold text-blue-600 mb-12 hidden md:block tracking-tight hover:opacity-80 transition">
-        CareSync<span class="text-blue-400">.</span>
+        T.Mukimii<span class="text-blue-400"></span>
     </a>
 
     <nav class="space-y-2">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Main Menu</p>
 
         <a href="#" onclick="showAppointments()" class="nav-link flex items-center p-3 text-gray-700 bg-blue-50 text-blue-600 font-semibold rounded-xl transition-all">
-            <i class="fas fa-th-large w-8"></i> Dashboard
+            <i class="fas fa-th-large w-8"></i> ড্যাশবোর্ড
         </a>
 
         <a href="doctors.html" class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
-            <i class="fas fa-calendar-plus w-8 text-blue-500"></i> Book Appointment
+            <i class="fas fa-calendar-plus w-8 text-blue-500"></i> অ্যাপয়েন্টমেন্ট নিন
         </a>
 
-        <a href="#" onclick="showPrescriptions()" class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
-            <i class="fas fa-file-medical w-8 text-emerald-500"></i> My Prescriptions
+        <a href="#" onclick="showPrescriptions()" class="nav-link flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all">
+            <i class="fas fa-file-medical w-8 text-emerald-700"></i> আমার প্রেসক্রিপশন
         </a>
 
         <div class="pt-10">
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Account</p>
             <a href="index.html" class="nav-link flex items-center p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                <i class="fas fa-sign-out-alt w-8"></i> Back to Home
+                <i class="fas fa-sign-out-alt w-8"></i> হোমে ফিরে যান
             </a>
         </div>
     </nav>
@@ -88,7 +88,7 @@
                 <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-5">
                     <i class="fas fa-calendar-check text-xl"></i>
                 </div>
-                <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Appointments</h3>
+                <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">আমার নেওয়া মোট অ্যাপয়েন্টমেন্ট</h3>
                 <p id="total-count" class="text-4xl font-black text-gray-800 mt-1">0</p>
             </div>
         </div>
@@ -99,7 +99,7 @@
                 <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 mb-5">
                     <i class="fas fa-broadcast-tower text-xl animate-pulse"></i>
                 </div>
-                <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Now Calling Serial</h3>
+                <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">বর্তমান সিরিয়াল চলছে:</h3>
                 <p id="live-serial-display" class="text-4xl font-black text-orange-600 mt-1 tracking-tighter">--</p>
                 <span class="inline-flex items-center mt-2 px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
                     <span class="w-1.5 h-1.5 rounded-full bg-orange-500 mr-1.5 animate-ping"></span> Live Update
@@ -110,19 +110,19 @@
 
     <section id="appointment-section" class="space-y-6">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800">My Appointments</h2>
+            <h2 class="text-xl font-bold text-gray-800">আমার অ্যাপয়েন্টমেন্ট</h2>
             <button class="text-blue-600 text-sm font-semibold hover:underline">View History</button>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-50/50">
-                    <tr class="text-gray-500 text-[11px] uppercase tracking-[0.15em] font-bold">
-                        <th class="p-5">Doctor</th>
-                        <th class="p-5">Date & Time</th>
-                        <th class="p-5">Status</th>
-                        <th class="p-5 text-center">Actions</th>
+                    <tr class="text-gray-500 text-[13px] uppercase tracking-[0.15em] font-bold">
+                        <th class="p-5">ডাক্তার</th>
+                        <th class="p-5">তারিখ ও সময়</th>
+                        <th class="p-5">স্ট্যাটাস</th>
+                        <th class="p-5 text-center">স্লিপ দেখুন</th>
                     </tr>
                     </thead>
                     <tbody id="patient-appointment-list" class="divide-y divide-gray-50">
@@ -145,11 +145,11 @@
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <table class="w-full text-left">
                 <thead class="bg-emerald-50/50">
-                <tr class="text-emerald-700 text-[11px] uppercase tracking-widest font-bold">
-                    <th class="p-5">Doctor Name</th>
-                    <th class="p-5">Date</th>
-                    <th class="p-5">Diagnosis</th>
-                    <th class="p-5 text-center">Action</th>
+                <tr class="text-emerald-700 text-[13px] uppercase tracking-widest font-bold">
+                    <th class="p-5">ডাক্তারের নাম</th>
+                    <th class="p-5">তারিখ</th>
+                    <th class="p-5">ডায়াগনোসিস</th>
+                    <th class="p-5 text-center">অ্যাকশন</th>
                 </tr>
                 </thead>
                 <tbody id="prescription-list-body" class="divide-y divide-gray-50">
@@ -158,6 +158,20 @@
         </div>
     </section>
 </main>
+
+
+
+<div id="doctorModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-[32px] max-w-2xl w-full p-8 shadow-2xl relative animate-in zoom-in duration-300">
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+        <div id="modalContent">
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     function toggleSidebar() {

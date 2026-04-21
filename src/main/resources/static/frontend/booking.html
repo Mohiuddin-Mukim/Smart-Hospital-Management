@@ -21,7 +21,7 @@
                     <p id="doc-spec" class="text-blue-600 font-medium">Specialist</p>
                 </div>
                 <div class="mt-6 space-y-3 text-sm text-gray-600">
-                    <p><i class="fas fa-money-bill-wave mr-2 text-green-500"></i> Consultation Fee: <span class="font-bold text-gray-900">৳ <span id="doc-fee">0</span></span></p>
+                    <p><i class="fas fa-money-bill-wave mr-2 text-green-500"></i> ডাক্তারের ফি: <span class="font-bold text-gray-900">৳ <span id="doc-fee">0</span></span></p>
                     <p><i class="fas fa-clock mr-2 text-blue-500"></i> Instant Confirmation</p>
                 </div>
             </div>
@@ -29,31 +29,31 @@
 
         <div class="lg:col-span-2">
             <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Select Date & Time</h3>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">তারিখ ও সময় সিলেক্ট করুন</h3>
 
                 <form id="bookingForm" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Appointment Date</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">অ্যাপয়েন্টমেন্ট নেওয়ার তারিখ সিলেক্ট করুন</label>
                         <input type="date" id="appointmentDate" required
                                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Available Slots</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ফাঁকা স্লট সমূহ</label>
                         <div id="slots-container" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                            <p class="col-span-full text-gray-400 text-sm italic">Please select a date first...</p>
+                            <p class="col-span-full text-gray-400 text-sm italic">Please তারিখ সিলেক্ট করুন...</p>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Visit (Optional)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ডাক্তার দেখানোর কারণ? (Optional)</label>
                         <textarea id="reason" rows="3" placeholder="Briefly describe your problem..."
                                   class="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
 
                     <button type="submit" id="payBtn" disabled
                             class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
-                        Proceed to Payment
+                        পেমেন্ট শুরু করুন
                     </button>
                 </form>
             </div>

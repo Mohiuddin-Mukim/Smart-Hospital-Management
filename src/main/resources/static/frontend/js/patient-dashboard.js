@@ -31,10 +31,13 @@ async function fetchMyAppointments() {
         // ১. আগে টেবিল রেন্ডার করুন
         renderTable(appointments);
 
+        console.log("🚀 Starting initLiveQueue...");
+        initLiveQueue(appointments);
         // ২. তারপর লাইভ সিরিয়ালের জন্য চেক করুন (টেবিল মোছার দরকার নেই)
         initLiveQueue(appointments);
 
     } catch (error) {
+        console.error("🔴 Error in fetchMyAppointments:", error);
         listContainer.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-red-400">Error: ${error.message}</td></tr>`;
     }
 }
@@ -42,18 +45,24 @@ async function fetchMyAppointments() {
 function apptTime(t) { return t.includes(':') ? t : t + ":00"; }
 
 function renderTable(list) {
+    console.log("Appointment Data Sample:", list[0]); // প্রথম ডেটাটি চেক করার জন্য
     const container = document.getElementById('patient-appointment-list');
-    const today = new Date().toISOString().split('T')[0];
+    // const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
+    console.log("📅 Comparison - System Today:", today);
 
     container.innerHTML = list.map(app => {
         const isToday = app.date === today;
+        console.log(`🔍 Checking Row -> Date: ${app.date}, Match: ${isToday}, Status: ${app.status}`);
         const canCancel = (app.status === 'PENDING') && (new Date(app.date) >= new Date().setHours(0,0,0,0));
 
         return `
         <tr class="border-b hover:bg-gray-50 transition">
             <td class="p-4">
-                <p class="font-bold text-gray-800">${app.doctorName}</p>
-                <p class="text-xs text-blue-600 font-semibold uppercase">${app.specialization || 'General'}</p>
+                <div onclick="openDoctorDetails(${app.doctorId})" class="cursor-pointer group">
+                    <p class="font-bold text-gray-800 group-hover:text-blue-600 transition">${app.doctorName}</p>
+                    <p class="text-xs text-blue-600 font-semibold uppercase">${app.specialization || 'General'}</p>
+                </div>
             </td>
             <td class="p-4 text-sm text-gray-700">
                 ${app.date} <br> <span class="font-bold text-gray-400">${app.time.substring(0,5)}</span>
@@ -65,26 +74,26 @@ function renderTable(list) {
             </td>
             <td class="p-4">
                 <div class="flex items-center justify-center gap-3">
-        ${(isToday && (app.status === 'BOOKED' || app.status === 'PAID')) ? `
-            <button onclick="showTokenDetails(${app.id})" class="text-orange-500 hover:text-orange-700" title="View Token">
-                <i class="fas fa-ticket-alt text-xl"></i>
-            </button>
-        ` : ''}
-        
-        <button onclick="viewReceipt(${app.id})" class="text-emerald-500 hover:text-emerald-700" title="View Receipt">
-            <i class="fas fa-eye text-xl"></i>
-        </button>
+                    ${(isToday && (app.status === 'BOOKED' || app.status === 'PAID')) ? `
+                        <button onclick="showTokenDetails(${app.id})" class="text-orange-500 hover:text-orange-700" title="View Token">
+                            <i class="fas fa-ticket-alt text-xl"></i>
+                        </button>
+                    ` : ''}
+                    
+                    <button onclick="viewReceipt(${app.id})" class="text-emerald-500 hover:text-emerald-700" title="View Receipt">
+                        <i class="fas fa-eye text-xl"></i>
+                    </button>
 
-        <button onclick="downloadReceipt(${app.id})" class="text-blue-600 hover:text-blue-800" title="Download Receipt">
-            <i class="fas fa-file-pdf text-xl"></i>
-        </button>
+                    <button onclick="downloadReceipt(${app.id})" class="text-blue-600 hover:text-blue-800" title="Download Receipt">
+                        <i class="fas fa-file-pdf text-xl"></i>
+                    </button>
 
-        ${canCancel ? `
-            <button onclick="cancelAppointment(${app.id})" class="text-red-400 hover:text-red-600" title="Cancel">
-                <i class="fas fa-trash-alt text-lg"></i>
-            </button>
-        ` : ''}
-    </div>
+                    ${canCancel ? `
+                        <button onclick="cancelAppointment(${app.id})" class="text-red-400 hover:text-red-600" title="Cancel">
+                            <i class="fas fa-trash-alt text-lg"></i>
+                        </button>
+                    ` : ''}
+                </div>
             </td>
         </tr>`;
     }).join('');
@@ -95,11 +104,15 @@ let subscribedDocs = new Set();
 
 function connectToQueue(docId) {
     // অলরেডি এই ডাক্তারের কিউতে সাবস্ক্রাইব করা থাকলে আর নতুন করে কানেক্ট করবে না
-    if (subscribedDocs.has(docId)) return;
+    if (subscribedDocs.has(docId)){
+        console.log("ℹ️ Already subscribed to Doctor:", docId);
+        return;
+    }
 
     const socket = new SockJS('http://localhost:8080/ws-queue');
     stompClient = Stomp.over(socket);
-    stompClient.debug = null;
+    // stompClient.debug = null;
+    stompClient.debug = (msg) => console.log("🔌 STOMP Debug:", msg);
 
     // কানেক্ট করার চেষ্টা
     stompClient.connect({}, function (frame) {
@@ -119,20 +132,43 @@ function connectToQueue(docId) {
     });
 }
 
+// function initLiveQueue(appointments) {
+//     // const today = new Date().toISOString().split('T')[0];
+//
+//     const today = new Date().toLocaleDateString('en-CA'); // এটি YYYY-MM-DD ফরম্যাট নিশ্চিত করবে
+//
+//     appointments.forEach(appt => {
+//         if (appt.date === today && (appt.status === 'BOOKED' || appt.status === 'PAID')) {
+//             console.log("Initializing Live Queue for Doctor ID:", appt.doctorId);
+//
+//             loadLiveServingNumber(appt.id);
+//
+//             connectToQueue(appt.doctorId);
+//         }
+//     });
+// }
+
 function initLiveQueue(appointments) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
+    let liveFound = false;
 
     appointments.forEach(appt => {
-        if (appt.date === today && (appt.status === 'BOOKED' || appt.status === 'PAID')) {
-            console.log("Initializing Live Queue for Doctor ID:", appt.doctorId);
+        const isToday = appt.date === today;
+        const hasValidStatus = (appt.status === 'BOOKED' || appt.status === 'PAID');
+
+        if (isToday && hasValidStatus) {
+            liveFound = true;
+            console.log("✅ Live Appointment Found! ID:", appt.id, "Doctor ID:", appt.doctorId);
 
             loadLiveServingNumber(appt.id);
-
             connectToQueue(appt.doctorId);
         }
     });
-}
 
+    if (!liveFound) {
+        console.warn("⚠️ No Live Appointments found for today with status BOOKED/PAID.");
+    }
+}
 
 
 async function showTokenDetails(appointmentId) {
@@ -271,6 +307,7 @@ async function viewReceipt(appointmentId) {
 
 
 async function loadLiveServingNumber(appointmentId) {
+    console.log("📡 Fetching Live Serving Number for ID:", appointmentId);
     try {
         const response = await fetch(`http://localhost:8080/api/v1/patients/${appointmentId}/live-status`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
@@ -278,6 +315,7 @@ async function loadLiveServingNumber(appointmentId) {
 
         if (response.ok) {
             const data = await response.json();
+            console.log("📊 Live Status Data Received:", data);
             const display = document.getElementById('live-serial-display');
 
             // ডাটাবেসে currentlyServing এ যা আছে তা এখানে দেখাবে
@@ -413,4 +451,83 @@ async function viewPrescription(prescriptionId) {
         console.error("View error:", error);
         alert("Prescription দেখা সম্ভব হয়নি।");
     }
+}
+
+
+
+
+// মোডাল ওপেন করার ফাংশন
+async function openDoctorDetails(id) {
+    if (!id) {
+        alert("ডাক্তারের আইডি পাওয়া যায়নি!");
+        return;
+    }
+
+    const modal = document.getElementById('doctorModal');
+    const content = document.getElementById('modalContent');
+
+    // মোডাল দেখান
+    modal.classList.remove('hidden');
+    content.innerHTML = `<div class="text-center py-10"><i class="fas fa-spinner animate-spin text-3xl text-blue-600"></i></div>`;
+
+    try {
+        // টোকেনটি আপনার ড্যাশবোর্ডের ভেরিয়েবল অনুযায়ী নিন
+        const token = localStorage.getItem('accessToken');
+
+        const res = await fetch(`http://localhost:8080/api/v1/doctors/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!res.ok) throw new Error("Doctor fetch failed");
+
+        const doc = await res.json();
+
+        // আপনার ডেটাবেসের ফিল্ড অনুযায়ী ইমেজ পাথ সেট করা
+        // স্যাম্পল ডেটাতে specialization অনেক বড়, তাই ডিজাইন সুন্দর রাখতে হবে
+        const img = doc.profilePictureUrl ? `http://localhost:8080${doc.profilePictureUrl}` : 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
+
+        content.innerHTML = `
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="shrink-0">
+                    <img src="${img}" class="w-48 h-48 rounded-2xl object-cover shadow-md border-4 border-white" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3774/3774299.png'">
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-gray-900">${doc.name}</h2>
+                    <p class="text-blue-600 font-bold text-lg mt-1">${doc.specialization.split(',')[0]}</p> 
+                    <div class="mt-4 space-y-2">
+                        <p class="text-sm text-gray-600"><i class="fas fa-graduation-cap w-5 text-gray-400"></i> <strong>Degree:</strong> ${doc.degree || 'N/A'}</p>
+                        <p class="text-sm text-gray-600"><i class="fas fa-briefcase w-5 text-gray-400"></i> <strong>Experience:</strong> ${doc.experienceYears || 0} Years</p>
+                        <p class="text-sm text-gray-600"><i class="fas fa-money-bill-wave w-5 text-gray-400"></i> <strong>Fees:</strong> ৳ ${doc.consultationFee}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8">
+                <h4 class="font-bold text-gray-800 border-b pb-2 mb-4 uppercase text-xs tracking-widest">About Doctor</h4>
+                <p class="text-gray-600 leading-relaxed text-sm">${doc.aboutDoctor || 'No additional information available for this doctor.'}</p>
+            </div>
+            <div class="mt-8 flex justify-end">
+                <button onclick="closeModal()" class="bg-gray-100 text-gray-700 px-6 py-2 rounded-xl font-bold hover:bg-gray-200 transition">
+                    Close
+                </button>
+            </div>
+        `;
+    } catch (e) {
+        console.error("Doctor Modal Error:", e);
+        content.innerHTML = `
+            <div class="text-center py-10">
+                <div class="bg-red-50 text-red-500 p-4 rounded-xl inline-block mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl"></i>
+                </div>
+                <p class="text-gray-800 font-bold">Error Loading Doctor Details</p>
+                <p class="text-gray-500 text-sm mt-1">Please try again later or check console.</p>
+            </div>`;
+    }
+}
+
+// মোডাল বন্ধ করা
+function closeModal() {
+    document.getElementById('doctorModal').classList.add('hidden');
 }

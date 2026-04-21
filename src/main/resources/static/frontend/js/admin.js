@@ -12,13 +12,14 @@ if (!token || (userRole !== 'ROLE_ADMIN' && userRole !== 'ADMIN')) {
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchDoctorsForSelector();
-    generateAdminScheduleSections(); // এটি এখন নিচে ডিফাইন করা আছে, এরর আসবে না
+    generateAdminScheduleSections();
     updateDashboardStats();
     loadAppointmentChart();
     loadAuditLogs();
     loadDoctorPerformance();
     loadMedicineAndDiagnosisCharts();
     loadPendingApprovals();
+    loadCurrentNotice();
 
     // ইভেন্ট লিসেনার্স
     document.getElementById('adminScheduleForm')?.addEventListener('submit', saveScheduleByAdmin);
@@ -314,7 +315,8 @@ function showSection(sectionId) {
             'add-doctor': 'Register New Doctor',
             'manage-schedules': 'Manage Schedules',
             'all-users': 'System Users',
-            'pending-requests': 'Profile Update Requests' // নতুন টাইটেল
+            'pending-requests': 'Profile Update Requests', // নতুন টাইটেল
+            'manage-notice': 'Notice Management'
         };
 
         const titleElement = document.getElementById('section-title');
@@ -325,6 +327,11 @@ function showSection(sectionId) {
         // ডাটা লোড করা (আপনার আগের লজিকগুলো অক্ষুণ্ণ আছে)
         if(sectionId === 'all-users') fetchAllUsers();
         if(sectionId === 'pending-requests') loadPendingApprovals();
+        if(sectionId === 'manage-notice') {
+            document.getElementById('manage-notice-section').classList.remove('hidden');
+            document.getElementById('section-title').innerText = "Notice Management";
+            loadCurrentNotice();
+        }
     }
 
     // ৩. সাইডবার একটিভ স্টাইল আপডেট (আপনার কোডটিই থাকছে)
@@ -619,7 +626,7 @@ async function loadMedicineAndDiagnosisCharts() {
         new Chart(document.getElementById('medicineDoughnutChart'), {
             type: 'doughnut',
             data: {
-                labels: data.medicines.map(m => m.name),
+                labels: data.medicines.map(m => m.name || "Unknown"),
                 datasets: [{
                     data: data.medicines.map(m => m.count),
                     backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
@@ -721,3 +728,63 @@ async function approveDoctor(requestId) {
         console.error("Error during approval:", error);
     }
 }
+
+
+
+
+
+async function postNotice() {
+    const content = document.getElementById('noticeInput').value;
+    const token = localStorage.getItem('accessToken');
+
+    if (!content) return alert("Please enter notice content!");
+    if (!token) {
+        alert("Session expired. Please login again.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/api/v1/admin/add-notice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            // JSON অবজেক্ট হিসেবে পাঠাচ্ছি
+            body: JSON.stringify({ content: content })
+        });
+
+        if (response.ok) {
+            alert("Notice Published successfully!");
+            document.getElementById('noticeInput').value = '';
+        } else if (response.status === 401 || response.status === 403) {
+            alert("Access Denied! You must be an Admin.");
+        } else {
+            alert("Something went wrong. Status: " + response.status);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Server connection failed!");
+    }
+}
+
+
+
+
+async function loadCurrentNotice() {
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch('http://localhost:8080/api/v1/admin/current-notice', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const currentContent = await response.text();
+            document.getElementById('noticeInput').value = currentContent;
+        }
+    } catch (error) {
+        console.error("Error loading current notice:", error);
+    }
+}
+
+

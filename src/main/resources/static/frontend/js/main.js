@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     renderNavbar();
+    fetchNotice();
 });
 
 function renderNavbar() {
@@ -40,7 +41,7 @@ function renderNavbar() {
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex justify-between h-20 items-center">
                     <div class="flex items-center">
-                        <a href="index.html" class="text-2xl font-black text-blue-600 tracking-tighter">Care<span class="text-blue-950">Sync</span><span class="text-blue-400">.</span></a>
+                        <a href="index.html" class="text-2xl font-black text-blue-600 tracking-tighter">T.<span class="text-blue-950">Mukimii</span><span class="text-blue-400"></span></a>
                     </div>
                     
                     <div class="hidden md:flex space-x-8 items-center h-full">
@@ -92,4 +93,32 @@ function handleLogout() {
     localStorage.clear();
     alert('Logged out successfully!');
     window.location.href = 'index.html';
+}
+
+
+
+
+async function fetchNotice() {
+    try {
+        // ফুল পাথ (Full URL) ব্যবহার করুন কারণ আপনার ব্যাকএন্ড ৮০৮০ পোর্টে চলছে
+        const response = await fetch('http://localhost:8080/api/v1/public/active-notices');
+
+        // যদি রেসপন্স ওকে না হয় (যেমন ৪-৪ বা ৫০০) তবে এরর থ্রো করবে
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const notices = await response.json();
+
+        if (Array.isArray(notices) && notices.length > 0) {
+            const bar = document.getElementById('notice-bar');
+            const textElement = document.getElementById('notice-text');
+
+            // সব নোটিশ একসাথে জুড়ে দেওয়া
+            textElement.innerText = notices.map(n => n.content).join(' | ');
+            bar.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error("Notice fetch error:", error);
+    }
 }
