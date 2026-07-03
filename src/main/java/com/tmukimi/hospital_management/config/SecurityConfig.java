@@ -71,11 +71,13 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
+                        .requestMatchers("/", "/frontend/index.html", "/frontend/**").permitAll()
+                        .requestMatchers("/frontend/js/**").permitAll()
+
+
+
 
                         .requestMatchers("/test.html", "/ws-queue/**", "/favicon.ico", "/error").permitAll()
-
-
-
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
 
