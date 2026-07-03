@@ -13,8 +13,11 @@ spring:
       org.hibernate.envers.store_data_at_delete: true
 
   flyway:
+    enabled: true
     baseline-on-migrate: true
     repair-on-migrate: true
+    validate-on-migrate: false
+    clean-on-validation-error: true
 
 
 logging:
