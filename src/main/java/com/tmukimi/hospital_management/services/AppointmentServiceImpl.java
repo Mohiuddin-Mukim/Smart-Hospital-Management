@@ -215,19 +215,26 @@ public class AppointmentServiceImpl implements AppointmentService {
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {
         AppointmentResponseDTO dto = AppointmentResponseDTO.builder()
                 .id(appointment.getId())
-                .patientId(appointment.getPatient().getId())
-                .patientName(appointment.getPatient().getName())
-                .doctorId(appointment.getDoctor().getId())
-                .doctorName(appointment.getDoctor().getName())
-                .specialization(appointment.getDoctor().getSpecialization())
+                .patientId(appointment.getPatient() != null ? appointment.getPatient().getId() : null)
+                .patientName(appointment.getPatient() != null ? appointment.getPatient().getName() : "Unknown Patient")
                 .date(appointment.getDate())
                 .time(appointment.getTime())
                 .status(appointment.getStatus())
                 .reason(appointment.getReason())
-                .fee(appointment.getDoctor().getConsultationFee())    // last change
                 .build();
 
-
+        // ডাক্তার ডিলিট হয়ে গেলে যেন ক্রাশ না করে তার চেক
+        if (appointment.getDoctor() != null) {
+            dto.setDoctorId(appointment.getDoctor().getId());
+            dto.setDoctorName(appointment.getDoctor().getName());
+            dto.setSpecialization(appointment.getDoctor().getSpecialization());
+            dto.setFee(appointment.getDoctor().getConsultationFee());
+        } else {
+            dto.setDoctorId(null);
+            dto.setDoctorName("Doctor Not Found (Deleted)");
+            dto.setSpecialization("N/A");
+            dto.setFee(appointment.getFee()); // যদি Appointment এ fee স্টোর করা থাকে তবে সেটি দিন
+        }
 
         prescriptionRepository.findByAppointmentId(appointment.getId())
                 .ifPresent(p -> dto.setPrescriptionId(p.getId()));
@@ -295,15 +302,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentResponseDTO> getAllPendingRequestsForAdmin() {
-        // Repository থেকে সব PENDING স্ট্যাটাস ফিল্টার করা
         List<Appointment> appointments = appointmentRepository.findAllByStatusOrderByIdDesc(AppointmentStatus.PENDING);
 
         return appointments.stream().map(appt -> {
             AppointmentResponseDTO dto = new AppointmentResponseDTO();
             dto.setId(appt.getId());
+
+
             dto.setPatientName(appt.getPatient() != null ? appt.getPatient().getName() : "Unknown");
-            // অ্যাডমিনের জন্য ডক্টরের নাম জানা জরুরি
-            dto.setDoctorName(appt.getDoctor() != null ? appt.getDoctor().getName() : "N/A");
+
+
+            if (appt.getDoctor() != null) {
+                dto.setDoctorName(appt.getDoctor().getName());
+            } else {
+                dto.setDoctorName("Deleted Doctor"); // আইডি না থাকলে এই টেক্সট দেখাবে
+            }
+
             dto.setDate(appt.getDate());
             dto.setTime(appt.getTime());
             dto.setStatus(appt.getStatus());

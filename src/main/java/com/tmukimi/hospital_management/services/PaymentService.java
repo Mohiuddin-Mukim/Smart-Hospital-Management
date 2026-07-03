@@ -68,8 +68,15 @@ public class PaymentService {
             document.add(new Paragraph("Patient Information:").setBold());
             document.add(new Paragraph("Patient: " + appt.getPatient().getName() + " | Contact: " + appt.getPatient().getPhone()));
 
+//            document.add(new Paragraph("Doctor Information:").setBold());
+//            document.add(new Paragraph("Doctor: " + appt.getDoctor().getName() + " (" + appt.getDoctor().getSpecialization() + ")"));
             document.add(new Paragraph("Doctor Information:").setBold());
-            document.add(new Paragraph("Doctor: " + appt.getDoctor().getName() + " (" + appt.getDoctor().getSpecialization() + ")"));
+
+            String docInfo = "Doctor: Not Available (Deleted)";
+            if (appt.getDoctor() != null) {
+                docInfo = "Doctor: " + appt.getDoctor().getName() + " (" + appt.getDoctor().getSpecialization() + ")";
+            }
+            document.add(new Paragraph(docInfo));
             document.add(new Paragraph("Date: " + appt.getDate() + " | Scheduled Time Slot: " + appt.getTime()));
 
 

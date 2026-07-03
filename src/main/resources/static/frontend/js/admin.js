@@ -223,8 +223,69 @@ async function saveScheduleByAdmin(e) {
 }
 
 
-async function createDoctor(e) { }
+async function createDoctor(e) {
+    e.preventDefault();
 
+    const saveBtn = document.getElementById('saveDocBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerText = "Processing...";
+
+    const formData = new FormData();
+
+    // ১. ব্যাকএন্ড DTO অনুযায়ী ডাটা অবজেক্ট তৈরি
+    const adminUserRequestDTO = {
+        email: document.getElementById('docEmail').value,
+        password: document.getElementById('docPassword').value,
+        role: "DOCTOR", // আপনার UserRole এনাম অনুযায়ী
+        name: document.getElementById('docName').value,
+        specialization: document.getElementById('docSpecialization').value,
+        degree: document.getElementById('docDegree').value,
+        designation: document.getElementById('docDesignation').value,
+        consultationFee: parseFloat(document.getElementById('docFee').value) || 0.0,
+        phone: document.getElementById('docPhone').value,
+        roomNo: document.getElementById('docRoom').value,
+        experienceYears: parseInt(document.getElementById('docExp').value) || 0,
+        aboutDoctor: document.getElementById('docAbout').value
+    };
+
+    // ২. DTO পার্টটি 'dto' নামে Blob হিসেবে অ্যাপেন্ড করা (আপনার কন্ট্রোলারের রিকোয়ারমেন্ট)
+    formData.append('dto', new Blob([JSON.stringify(adminUserRequestDTO)], {
+        type: 'application/json'
+    }));
+
+    // ৩. ফাইল পার্টটি 'file' নামে অ্যাপেন্ড করা
+    const fileInput = document.getElementById('docImage');
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+    try {
+        // আপনার কন্ট্রোলার অনুযায়ী সঠিক URL
+        const response = await fetch('http://localhost:8080/api/v1/auth/admin/create-user', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}` // গ্লোবাল টোকেন ভেরিয়েবল
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            alert("Success! Doctor created with profile picture.");
+            document.getElementById('addDoctorForm').reset();
+            showSection('stats');
+            updateDashboardStats();
+        } else {
+            const errorData = await response.text();
+            alert("Error: " + errorData);
+        }
+    } catch (err) {
+        console.error("Submission Error:", err);
+        alert("Connection failed! Check if backend is running.");
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save Doctor Profile";
+    }
+}
 
 
 

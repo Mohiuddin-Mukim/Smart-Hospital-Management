@@ -34,8 +34,8 @@ public class AdminDashboardController {
     public ResponseEntity<DashboardSummaryDTO> getSummary() {
         BigDecimal revenue = appointmentRepository.calculateTotalRevenue();
         DashboardSummaryDTO summary = new DashboardSummaryDTO(
-                patientRepository.count(),
-                doctorRepository.count(),
+                patientRepository.countActivePatients(),
+                doctorRepository.countActiveDoctors(),
                 prescriptionRepository.count(),
                 appointmentRepository.countByDate(LocalDate.now()),
                 revenue != null ? revenue : BigDecimal.ZERO

@@ -83,15 +83,31 @@ public class PrescriptionPdfService {
                     .setMarginTop(5).setFontColor(new DeviceRgb(0, 102, 204)));
 
             // --- DOCTOR & DATE INFO ---
-            Table infoGrid = new Table(UnitValue.createPercentArray(new float[]{5, 5})).useAllAvailableWidth().setMarginTop(10);
+            Table infoGrid = new Table(UnitValue.createPercentArray(new float[]{5, 5}))
+                    .useAllAvailableWidth()
+                    .setMarginTop(10);
 
-            infoGrid.addCell(new Cell().add(new Paragraph("Dr. " + prescription.getAppointment().getDoctor().getName()).setBold().setFontSize(14))
-                    .add(new Paragraph(prescription.getAppointment().getDoctor().getSpecialization()).setFontSize(10))
+            String doctorName = "Unknown Doctor";
+            String specialization = "N/A";
+
+            if (prescription.getAppointment().getDoctor() != null) {
+                doctorName = "Dr. " + prescription.getAppointment().getDoctor().getName();
+                specialization = prescription.getAppointment().getDoctor().getSpecialization();
+            } else {
+                // ডাক্তার ডিলিট হয়ে থাকলে এই মেসেজ দেখাবে
+                doctorName = "Doctor Not Available (Deleted)";
+            }
+
+            infoGrid.addCell(new Cell()
+                    .add(new Paragraph(doctorName).setBold().setFontSize(14))
+                    .add(new Paragraph(specialization).setFontSize(10))
                     .setBorder(Border.NO_BORDER));
 
-            infoGrid.addCell(new Cell().add(new Paragraph("Date: " + prescription.getCreatedAt().format(DateTimeFormatter.ofPattern("dd MMM, yyyy")))
+            infoGrid.addCell(new Cell()
+                    .add(new Paragraph("Date: " + prescription.getCreatedAt().format(DateTimeFormatter.ofPattern("dd MMM, yyyy")))
                             .setTextAlignment(TextAlignment.RIGHT))
-                    .add(new Paragraph("Prescription ID: #" + prescriptionId).setTextAlignment(TextAlignment.RIGHT).setFontSize(9))
+                    .add(new Paragraph("Prescription ID: #" + prescriptionId)
+                            .setTextAlignment(TextAlignment.RIGHT).setFontSize(9))
                     .setBorder(Border.NO_BORDER));
 
             document.add(infoGrid);

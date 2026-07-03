@@ -175,31 +175,47 @@
 
 
 
-    <section id="add-doctor-section" class="hidden bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto">
+    <section id="add-doctor-section" class="hidden bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto border-t-4 border-blue-600">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Register New Doctor</h2>
+
         <form id="addDoctorForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2 text-blue-600 font-semibold text-sm uppercase">Login Information</div>
+            <div class="md:col-span-2 text-blue-600 font-bold text-sm uppercase tracking-wider">Login Information</div>
             <input type="email" id="docEmail" placeholder="Doctor Email" required class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
             <input type="password" id="docPassword" placeholder="Initial Password" required class="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
 
-            <div class="md:col-span-2 text-blue-600 font-semibold text-sm uppercase mt-4">Professional Details</div>
+            <div class="md:col-span-2 text-blue-600 font-bold text-sm uppercase tracking-wider mt-4">Professional Details</div>
             <input type="text" id="docName" placeholder="Full Name" required class="p-3 border rounded-lg">
             <input type="text" id="docSpecialization" placeholder="Specialization (e.g. Cardiologist)" required class="p-3 border rounded-lg">
-            <input type="text" id="docDegree" placeholder="Degrees (e.g. MBBS, FCPS)" class="p-3 border rounded-lg">
-            <input type="text" id="docDesignation" placeholder="Designation (e.g. Senior Consultant)" class="p-3 border rounded-lg">
+            <input type="text" id="docDegree" placeholder="Degrees (MBBS, FCPS)" class="p-3 border rounded-lg">
+            <input type="text" id="docDesignation" placeholder="Designation" class="p-3 border rounded-lg">
             <input type="number" id="docFee" placeholder="Consultation Fee (BDT)" class="p-3 border rounded-lg">
             <input type="number" id="docExp" placeholder="Years of Experience" class="p-3 border rounded-lg">
 
+            <input type="text" id="docPhone" placeholder="Phone Number" class="p-3 border rounded-lg">
+            <input type="text" id="docRoom" placeholder="Room No" class="p-3 border rounded-lg">
+            <select id="docGender" class="p-3 border rounded-lg bg-white">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <div class="md:col-span-2">
+                <textarea id="docAbout" rows="3" placeholder="About Doctor..." class="w-full p-3 border rounded-lg"></textarea>
+            </div>
+
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
-                <input type="file" id="docImage" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                <input type="file" id="docImage" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             </div>
 
             <div class="md:col-span-2 mt-6">
-                <button type="submit" id="saveDocBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Save Doctor Profile</button>
+                <button type="submit" id="saveDocBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition shadow-md active:scale-95">Save Doctor Profile</button>
             </div>
         </form>
     </section>
+
+
 
 
 

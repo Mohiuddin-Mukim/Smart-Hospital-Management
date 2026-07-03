@@ -34,10 +34,14 @@ public class DoctorService {
     private final DoctorProfileRequestRepository requestRepository;
 
     public List<DoctorResponseDTO> getAllDoctors() {
-        return doctorRepository.findAll().stream()
+        return doctorRepository.findAllActiveDoctors().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+
+
+
 
     public DoctorResponseDTO getDoctorById(Long id) {
         Doctor doctor = doctorRepository.findById(id)

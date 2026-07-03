@@ -119,7 +119,7 @@ function connectToQueue(docId) {
         console.log('Connected to Queue for Doctor: ' + docId);
         subscribedDocs.add(docId); // সাকসেস হলে সেটে অ্যাড হবে
 
-        // 🔥 সমাধান: কানেক্ট হওয়ার ঠিক পরেই সাবস্ক্রাইব করুন
+        // 🔥 সমাধান: কানেক্ট হওয়ার ঠিক পরেই সাবস্ক্রাইব হবে
         stompClient.subscribe(`/topic/doctor/${docId}`, function (message) {
             const currentSerial = message.body;
             console.log("New Serial Received via WS:", currentSerial);

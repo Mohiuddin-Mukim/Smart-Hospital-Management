@@ -4,6 +4,8 @@ package com.tmukimi.hospital_management.entities;
 import com.tmukimi.hospital_management.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -31,6 +33,7 @@ public class Appointment extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id",   nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Doctor doctor;
 
     private LocalDate date;

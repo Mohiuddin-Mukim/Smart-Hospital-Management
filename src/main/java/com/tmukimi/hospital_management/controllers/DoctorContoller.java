@@ -34,6 +34,8 @@ public class DoctorContoller {
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
+
+
     //Public API: to see a doctors profile
     // GET http://localhost:8080/api/v1/doctors/2
     @GetMapping("/{id}")
