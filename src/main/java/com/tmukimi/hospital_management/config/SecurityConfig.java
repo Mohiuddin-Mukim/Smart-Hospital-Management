@@ -70,46 +70,34 @@ public class SecurityConfig {
 
 
                 .authorizeHttpRequests(auth -> auth
-
+                        // ১. ফ্রন্টএন্ড মনোলিথিক পেজ এবং সমস্ত স্ট্যাটিক রিসোর্স (CSS, JS, Images) সবার জন্য উন্মুক্ত
                         .requestMatchers("/", "/frontend/index.html", "/frontend/**").permitAll()
-                        .requestMatchers("/frontend/js/**").permitAll()
-
-
-
-
                         .requestMatchers("/test.html", "/ws-queue/**", "/favicon.ico", "/error").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
 
-
-
-                        .requestMatchers("/api/v1/payments/*/receipt").authenticated()
-                        .requestMatchers("/api/v1/payments/**").permitAll()
-
-
-
-
+                        // ২. অথেনটিকেশন এবং পেমেন্ট গেটওয়ে গেট
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/payments/**").permitAll()
+                        .requestMatchers("/api/v1/payments/*/receipt").authenticated()
 
+                        // ৩. ইউজার এপিআই রুলস (ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasRole("ADMIN")
 
-
+                        // ৪. ডক্টর এপিআই রুলস
                         .requestMatchers(HttpMethod.GET, "/api/v1/doctors/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/doctors/me").hasRole("DOCTOR")
 
-
+                        // ৫. মেডিসিন এপিআই রুলস
                         .requestMatchers(HttpMethod.GET, "/api/medicines/**").authenticated()
 
-
-
-
+                        // ৬. ড্যাশবোর্ড এবং ইন্টারনাল রোল রুলস
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/admin/dashboard/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/doctor/**").hasRole("DOCTOR")
 
-
-
+                        // ৭. বাকি সব ইন্টারনাল ব্যাকএন্ড এপিআই রিকোয়েস্ট টোকেন দিয়ে প্রোটেক্টেড থাকবে
                         .anyRequest().authenticated()
                 )
 

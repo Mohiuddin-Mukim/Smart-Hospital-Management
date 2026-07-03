@@ -42,7 +42,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path != null && path.startsWith("/ws-queue") || path.contains("/ws-queue/") || path.equals("/test.html")) {
+        if (path != null && (
+                path.startsWith("/ws-queue") ||
+                        path.contains("/ws-queue/") ||
+                        path.equals("/test.html") ||
+                        path.equals("/") ||
+                        path.startsWith("/frontend/") ||
+                        path.endsWith(".html") ||
+                        path.endsWith(".js") ||
+                        path.endsWith(".css") ||
+                        path.equals("/favicon.ico")
+        )) {
             filterChain.doFilter(request, response);
             return;
         }
