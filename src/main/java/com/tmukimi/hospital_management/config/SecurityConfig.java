@@ -71,8 +71,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         // ১. ফ্রন্টএন্ড মনোলিথিক পেজ এবং সমস্ত স্ট্যাটিক রিসোর্স (CSS, JS, Images) সবার জন্য উন্মুক্ত
-                        .requestMatchers("/", "/frontend/index.html", "/frontend/**").permitAll()
-                        .requestMatchers("/test.html", "/ws-queue/**", "/favicon.ico", "/error").permitAll()
+                        .requestMatchers("/", "/index.html", "/*.html", "/js/**", "/css/**", "/images/**", "/favicon.ico", "/error").permitAll()
+                        .requestMatchers("/test.html", "/ws-queue/**", "/uploads/**", "/api/v1/public/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
 

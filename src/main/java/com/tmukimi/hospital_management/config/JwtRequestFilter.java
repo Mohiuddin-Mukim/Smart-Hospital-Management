@@ -47,7 +47,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         path.contains("/ws-queue/") ||
                         path.equals("/test.html") ||
                         path.equals("/") ||
-                        path.startsWith("/frontend/") ||
                         path.endsWith(".html") ||
                         path.endsWith(".js") ||
                         path.endsWith(".css") ||
