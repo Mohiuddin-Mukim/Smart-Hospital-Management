@@ -39,9 +39,9 @@ public class SSLCommerzService {
         map.add("total_amount", String.valueOf(amount));
         map.add("currency", "BDT");
         map.add("tran_id", tranId);
-        map.add("success_url", "http://localhost:8080/api/v1/payments/success");
-        map.add("fail_url", "http://localhost:8080/api/v1/payments/fail");
-        map.add("cancel_url", "http://localhost:8080/api/v1/payments/cancel");
+        map.add("success_url", "https://smart-hospital-management-u2b8.onrender.com/api/v1/payments/success");
+        map.add("fail_url", "https://smart-hospital-management-u2b8.onrender.com/api/v1/payments/fail");
+        map.add("cancel_url", "https://smart-hospital-management-u2b8.onrender.com/api/v1/payments/cancel");
         map.add("cus_name", patientName);
         map.add("cus_email", patientEmail);
         map.add("cus_phone", "01700000000");

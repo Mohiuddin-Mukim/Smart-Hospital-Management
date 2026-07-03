@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-queue")
-                .setAllowedOriginPatterns("http://localhost:*", "null")
+                .setAllowedOriginPatterns("http://localhost:*","https://smart-hospital-management-u2b8.onrender.com", "null")
                 .withSockJS();
     }
 }

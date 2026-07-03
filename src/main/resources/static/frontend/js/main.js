@@ -101,7 +101,7 @@ function handleLogout() {
 async function fetchNotice() {
     try {
         // ফুল পাথ (Full URL) ব্যবহার করুন কারণ আপনার ব্যাকএন্ড ৮০৮০ পোর্টে চলছে
-        const response = await fetch('http://localhost:8080/api/v1/public/active-notices');
+        const response = await fetch('/api/v1/public/active-notices');
 
         // যদি রেসপন্স ওকে না হয় (যেমন ৪-৪ বা ৫০০) তবে এরর থ্রো করবে
         if (!response.ok) {

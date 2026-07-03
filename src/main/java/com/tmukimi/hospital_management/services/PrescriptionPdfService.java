@@ -68,7 +68,7 @@ public class PrescriptionPdfService {
             // --- DYNAMIC QR CODE FOR VERIFICATION ---
             // এখানে আপনার অরিজিনাল ডোমেইন নাম বসিয়ে দিন
             // PDF সার্ভিস ফাইলের ভেতরে এই অংশটি আপডেট করুন
-            String verificationUrl = "http://localhost:8080/api/v1/public/verify/prescription/" + prescription.getVerificationToken();
+            String verificationUrl = "https://smart-hospital-management-u2b8.onrender.com/api/v1/public/verify/prescription/" + prescription.getVerificationToken();
             BarcodeQRCode qrCode = new BarcodeQRCode(verificationUrl);
             PdfFormXObject qrCodeObject = qrCode.createFormXObject(ColorConstants.BLACK, pdf);
             Image qrCodeImage = new Image(qrCodeObject).setWidth(60).setHorizontalAlignment(HorizontalAlignment.RIGHT);

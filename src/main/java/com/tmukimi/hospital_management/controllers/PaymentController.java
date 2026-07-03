@@ -48,7 +48,7 @@ public class PaymentController {
                     <h1 style="color: green;">Payment Successful!</h1>
                     <p>Transaction ID: %s</p>
                     <p>Your appointment is now PENDING doctor approval.</p>
-                    <a href="http://localhost:63342/hospital-management/static/frontend/patient-dashboard.html">Go to Dashboard</a>
+                    "<a href=\\"https://smart-hospital-management-u2b8.onrender.com/frontend/patient-dashboard.html\\">Go to Dashboard</a>"
                 </body>
             </html>
             """.formatted(tranId));

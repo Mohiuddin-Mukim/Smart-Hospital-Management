@@ -1,4 +1,4 @@
-const AUTH_URL = "http://localhost:8080/api/v1/auth";
+const AUTH_URL = "/api/v1/auth";
 const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 let allDoctors = [];
 
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchDoctorsForSelector() {
     try {
-        const response = await fetch('http://localhost:8080/api/v1/doctors', {
+        const response = await fetch('/api/v1/doctors', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.status === 401) return handleLogout();
@@ -166,7 +166,7 @@ function addAdminSessionWithData(day, data) {
 
 async function fetchAndPopulateDoctorSchedule(doctorId) {
     try {
-        const res = await fetch(`http://localhost:8080/api/admin/appointments/schedule/${doctorId}`, {
+        const res = await fetch(`/api/admin/appointments/schedule/${doctorId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -213,7 +213,7 @@ async function saveScheduleByAdmin(e) {
         });
     });
     try {
-        const response = await fetch(`http://localhost:8080/api/admin/appointments/schedule/${doctorId}`, {
+        const response = await fetch(`/api/admin/appointments/schedule/${doctorId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(scheduleData)
@@ -261,7 +261,7 @@ async function createDoctor(e) {
 
     try {
         // আপনার কন্ট্রোলার অনুযায়ী সঠিক URL
-        const response = await fetch('http://localhost:8080/api/v1/auth/admin/create-user', {
+        const response = await fetch('/api/v1/auth/admin/create-user', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}` // গ্লোবাল টোকেন ভেরিয়েবল
@@ -299,7 +299,7 @@ async function fetchAllUsers() {
 
     try {
         // সঠিক URL: কন্ট্রোলারের সাথে মিলিয়ে /api/v1/users দেওয়া হলো
-        const response = await fetch('http://localhost:8080/api/v1/users', {
+        const response = await fetch('/api/v1/users', {
             headers: {
                 'Authorization': `Bearer ${token}`, // টোকেন অবশ্যই পাঠাতে হবে
                 'Content-Type': 'application/json'
@@ -412,7 +412,7 @@ async function deleteUser(id) {
     if (!confirm("আপনি কি নিশ্চিতভাবে এই ইউজারকে ডিঅ্যাক্টিভেট করতে চান?")) return;
 
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/users/${id}/deactivate`, {
+        const response = await fetch(`/api/v1/users/${id}/deactivate`, {
             method: 'PATCH', // আপনার কন্ট্রোলারে @PatchMapping আছে
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -442,7 +442,7 @@ function handleLogout() {
 
 async function updateDashboardStats() {
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/dashboard/summary', {
+        const response = await fetch('/api/v1/admin/dashboard/summary', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -468,7 +468,7 @@ async function updateDashboardStats() {
 
 async function updatePerformanceTable() {
     try {
-        const response = await fetch('http://localhost:8080/api/admin/dashboard/doctor-performance', {
+        const response = await fetch('/api/admin/dashboard/doctor-performance', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -487,7 +487,7 @@ async function updatePerformanceTable() {
 
 async function loadAppointmentChart() {
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/dashboard/appointment-trends', {
+        const response = await fetch('/api/v1/admin/dashboard/appointment-trends', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -562,7 +562,7 @@ let allAuditLogs = [];
 
 async function loadAuditLogs(page = 0) {
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/admin/audit/global?page=${page}&size=15`, {
+        const response = await fetch(`/api/v1/admin/audit/global?page=${page}&size=15`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -636,7 +636,7 @@ function getActionClass(type) {
 
 async function loadDoctorPerformance() {
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/dashboard/doctor-performance', {
+        const response = await fetch('/api/v1/admin/dashboard/doctor-performance', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -678,7 +678,7 @@ async function loadDoctorPerformance() {
 
 async function loadMedicineAndDiagnosisCharts() {
     try {
-        const res = await fetch('http://localhost:8080/api/v1/admin/dashboard/medicine-analytics', {
+        const res = await fetch('/api/v1/admin/dashboard/medicine-analytics', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -715,7 +715,7 @@ async function loadPendingApprovals() {
     const token = localStorage.getItem('accessToken');
 
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/pending-profiles', {
+        const response = await fetch('/api/v1/admin/pending-profiles', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -770,7 +770,7 @@ async function approveDoctor(requestId) {
 
     const token = localStorage.getItem('accessToken');
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/admin/approve-profile/${requestId}`, {
+        const response = await fetch(`/api/v1/admin/approve-profile/${requestId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -800,7 +800,7 @@ async function fetchAllPendingAppointments() {
     tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner animate-spin"></i> Loading...</td></tr>`;
 
     try {
-        const res = await fetch('http://localhost:8080/api/admin/appointments/requests', {
+        const res = await fetch('/api/admin/appointments/requests', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -853,7 +853,7 @@ async function handleAdminStatusUpdate(appointmentId, status) {
     if (!confirm(`Are you sure you want to ${action} this appointment?`)) return;
 
     try {
-        const response = await fetch(`http://localhost:8080/api/admin/appointments/${appointmentId}/status?status=${status}`, {
+        const response = await fetch(`/api/admin/appointments/${appointmentId}/status?status=${status}`, {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -890,7 +890,7 @@ async function postNotice() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/add-notice', {
+        const response = await fetch('/api/v1/admin/add-notice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -920,7 +920,7 @@ async function postNotice() {
 async function loadCurrentNotice() {
     const token = localStorage.getItem('accessToken');
     try {
-        const response = await fetch('http://localhost:8080/api/v1/admin/current-notice', {
+        const response = await fetch('/api/v1/admin/current-notice', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {

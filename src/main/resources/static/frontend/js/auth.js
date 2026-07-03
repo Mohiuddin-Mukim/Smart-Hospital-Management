@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/v1/auth";
+const BASE_URL = "/api/v1/auth";
 
 // --- ১. পাসওয়ার্ড দেখা বা লুকানোর লজিক (লগইন ফর্মের বাইরে থাকবে) ---
 const togglePassword = document.querySelector('#togglePassword');

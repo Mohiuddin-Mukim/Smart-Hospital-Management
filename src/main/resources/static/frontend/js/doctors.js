@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/v1/doctors";
+const API_URL = "/api/v1/doctors";
 let allDoctors = []; // সব ডাক্তারদের ডেটা সেভ করে রাখার জন্য
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -41,7 +41,7 @@ function renderDoctors(doctors) {
         let imageUrl;
         if (rawPath) {
             // যদি পাথে অলরেডি http থাকে তবে সেটা ধরবে, না থাকলে লোকাল হোস্ট যোগ করবে
-            imageUrl = rawPath.startsWith('http') ? rawPath : `http://localhost:8080${rawPath}`;
+            imageUrl = rawPath.startsWith('http') ? rawPath : `${rawPath}`;
         } else {
             imageUrl = 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
         }
@@ -94,7 +94,7 @@ async function openDoctorDetails(id) {
         const doc = await res.json();
 
         // 🔥 ইমেজ পাথ ফিক্স (এখানেও)
-        const img = doc.profilePicture ? `http://localhost:8080${doc.profilePicture}` : 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
+        const img = doc.profilePicture ? `${doc.profilePicture}` : 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
 
         content.innerHTML = `
             <div class="flex flex-col md:flex-row gap-8">

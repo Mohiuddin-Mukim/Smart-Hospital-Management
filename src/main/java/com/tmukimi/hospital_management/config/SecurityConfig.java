@@ -114,7 +114,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration frontendConfig = new CorsConfiguration();
-        frontendConfig.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000" ));
+        frontendConfig.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000", "https://smart-hospital-management-u2b8.onrender.com"));
         frontendConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         frontendConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         frontendConfig.setExposedHeaders(List.of("Authorization"));

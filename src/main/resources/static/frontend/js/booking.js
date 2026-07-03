@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // ডাক্তারের ডিটেইলস লোড (Summary Card এর জন্য)
 async function loadDoctorDetails() {
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/doctors/${doctorId}`);
+        const res = await fetch(`/api/v1/doctors/${doctorId}`);
         const doc = await res.json();
         document.getElementById('doc-name').innerText = doc.name;
         document.getElementById('doc-spec').innerText = doc.specialization;
         document.getElementById('doc-fee').innerText = doc.consultationFee;
         if(doc.profilePictureUrl) {
-            document.getElementById('doc-img').src = `http://localhost:8080${doc.profilePictureUrl}`;
+            document.getElementById('doc-img').src = `${doc.profilePictureUrl}`;
         }
     } catch (e) { console.error("Error loading doctor"); }
 }
@@ -40,7 +40,7 @@ async function fetchAvailableSlots(date) {
 
     try {
         const token = localStorage.getItem('accessToken');
-        const res = await fetch(`http://localhost:8080/api/v1/appointments/slots?doctorId=${doctorId}&date=${date}`, {
+        const res = await fetch(`/api/v1/appointments/slots?doctorId=${doctorId}&date=${date}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -108,7 +108,7 @@ document.getElementById('bookingForm').addEventListener('submit', async (e) => {
     };
 
     try {
-        const res = await fetch('http://localhost:8080/api/v1/appointments/book', {
+        const res = await fetch('/api/v1/appointments/book', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

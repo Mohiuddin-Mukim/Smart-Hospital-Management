@@ -36,7 +36,7 @@ async function callPatient(tokenId, appointmentId) {
     if (!confirm("আপনি কি এই পেশেন্টকে কল করতে চান? এটি সিরিয়াল বোর্ডে আপডেট হবে।")) return;
 
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/doctors/tokens/${tokenId}/call`, {
+        const response = await fetch(`/api/v1/doctors/tokens/${tokenId}/call`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -89,7 +89,7 @@ async function savePrescription() {
     console.log("Sending Data to Server:", prescriptionData);
 
     try {
-        const res = await fetch('http://localhost:8080/api/v1/prescriptions/save', {
+        const res = await fetch('/api/v1/prescriptions/save', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ async function searchMedicine(query) {
     try {
         const token = localStorage.getItem('accessToken'); // টোকেনটি নিচ্ছি
 
-        const res = await fetch(`http://localhost:8080/api/medicines/search?query=${query}`, {
+        const res = await fetch(`/api/medicines/search?query=${query}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // যেহেতু .authenticated() দিয়েছেন, এটা মাস্ট
@@ -256,7 +256,7 @@ function generateScheduleSections() {
 
 async function fetchAndPopulateMySchedule() {
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/doctor/appointments/schedule`, {
+        const res = await fetch(`/api/v1/doctor/appointments/schedule`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
 
@@ -325,7 +325,7 @@ function addSession(day) {
 
 async function fetchPendingRequests() {
     try {
-        const res = await fetch('http://localhost:8080/api/v1/doctor/appointments/requests', {
+        const res = await fetch('/api/v1/doctor/appointments/requests', {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
 
@@ -367,7 +367,7 @@ async function fetchDailyAppointments() {
     const localDate = `${year}-${month}-${day}`;
 
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/doctor/appointments/daily?date=${localDate}`, {
+        const res = await fetch(`/api/v1/doctor/appointments/daily?date=${localDate}`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
 
@@ -389,7 +389,7 @@ async function fetchAppointmentsBySelectedDate() {
     tableBody.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-blue-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</td></tr>`;
 
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/doctor/appointments/daily?date=${selectedDate}`, {
+        const res = await fetch(`/api/v1/doctor/appointments/daily?date=${selectedDate}`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
 
@@ -471,7 +471,7 @@ async function handleStatusUpdate(appointmentId, status) {
     if (!confirm(confirmMsg)) return;
 
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/doctor/appointments/${appointmentId}/status?status=${status}`, {
+        const response = await fetch(`/api/v1/doctor/appointments/${appointmentId}/status?status=${status}`, {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
@@ -535,7 +535,7 @@ async function saveScheduleByDoctor(e) {
     try {
         // এখানে URL আপনার ডাক্তারের জন্য নির্দিষ্ট এপিআই এন্ডপয়েন্ট হতে হবে
         // সাধারণত: /api/v1/doctor/schedule (আপনার ব্যাকেন্ড অনুযায়ী পরিবর্তন করুন)
-        const response = await fetch(`http://localhost:8080/api/v1/doctor/appointments/schedule`, {
+        const response = await fetch(`/api/v1/doctor/appointments/schedule`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -590,7 +590,7 @@ async function fetchDoctorInfo() {
 
     try {
         // ১. ডাক্তারের প্রোফাইল থেকে নাম নিয়ে আসা
-        const profileRes = await fetch('http://localhost:8080/api/v1/doctors/me', {
+        const profileRes = await fetch('/api/v1/doctors/me', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const doctorData = await profileRes.json();
@@ -600,7 +600,7 @@ async function fetchDoctorInfo() {
 
         // ২. আজকের অ্যাপয়েন্টমেন্ট এবং কমপ্লিটেড ডাটা ফেচ করা
         const today = new Date().toISOString().split('T')[0];
-        const appRes = await fetch(`http://localhost:8080/api/v1/doctor/appointments/daily?date=${today}`, {
+        const appRes = await fetch(`/api/v1/doctor/appointments/daily?date=${today}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const appointments = await appRes.json();
@@ -631,7 +631,7 @@ async function loadProfileData() {
     showSection('profile-section');
 
     try {
-        const response = await fetch('http://localhost:8080/api/v1/doctors/me', {
+        const response = await fetch('/api/v1/doctors/me', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -708,7 +708,7 @@ document.getElementById('updateProfileForm').addEventListener('submit', async fu
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/v1/doctors/profile-update', {
+        const response = await fetch('/api/v1/doctors/profile-update', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`

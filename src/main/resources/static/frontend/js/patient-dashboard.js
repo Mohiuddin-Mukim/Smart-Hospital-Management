@@ -6,7 +6,7 @@ async function fetchMyAppointments() {
     const listContainer = document.getElementById('patient-appointment-list');
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch('http://localhost:8080/api/v1/appointments/my', {
+        const response = await fetch('/api/v1/appointments/my', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -109,7 +109,7 @@ function connectToQueue(docId) {
         return;
     }
 
-    const socket = new SockJS('http://localhost:8080/ws-queue');
+    const socket = new SockJS('/ws-queue');
     stompClient = Stomp.over(socket);
     // stompClient.debug = null;
     stompClient.debug = (msg) => console.log("🔌 STOMP Debug:", msg);
@@ -173,7 +173,7 @@ function initLiveQueue(appointments) {
 
 async function showTokenDetails(appointmentId) {
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/patients/${appointmentId}/token-status`, {
+        const res = await fetch(`/api/v1/patients/${appointmentId}/token-status`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
         const tokenData = await res.json();
@@ -223,7 +223,7 @@ async function cancelAppointment(appointmentId) {
     if (!confirm("আপনি কি নিশ্চিত যে এই অ্যাপয়েন্টমেন্টটি বাতিল করতে চান?")) return;
 
     try {
-        const res = await fetch(`http://localhost:8080/api/v1/appointments/${appointmentId}/cancel`, {
+        const res = await fetch(`/api/v1/appointments/${appointmentId}/cancel`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
@@ -240,7 +240,7 @@ async function cancelAppointment(appointmentId) {
 async function downloadReceipt(appointmentId) {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8080/api/v1/payments/${appointmentId}/receipt`, {
+        const response = await fetch(`/api/v1/payments/${appointmentId}/receipt`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -273,7 +273,7 @@ async function viewReceipt(appointmentId) {
     }
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8080/api/v1/payments/${appointmentId}/receipt`, {
+        const response = await fetch(`/api/v1/payments/${appointmentId}/receipt`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -309,7 +309,7 @@ async function viewReceipt(appointmentId) {
 async function loadLiveServingNumber(appointmentId) {
     console.log("📡 Fetching Live Serving Number for ID:", appointmentId);
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/patients/${appointmentId}/live-status`, {
+        const response = await fetch(`/api/v1/patients/${appointmentId}/live-status`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
 
@@ -350,7 +350,7 @@ async function fetchPrescriptions() {
         const token = localStorage.getItem('accessToken');
         // আমরা অ্যাপয়েন্টমেন্ট লিস্ট থেকেই COMPLETED গুলো আলাদা করতে পারি
         // অথবা আলাদা API থাকলে সেটি কল করতে পারি।
-        const res = await fetch('http://localhost:8080/api/v1/appointments/my', {
+        const res = await fetch('/api/v1/appointments/my', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -398,7 +398,7 @@ async function downloadPrescription(prescriptionId) {
         const token = localStorage.getItem('accessToken');
         // আপনার কন্ট্রোলারের পাথ: /api/v1/prescriptions/{id}/download
         // দ্রষ্টব্য: এখানে {id} মানে অ্যাপয়েন্টমেন্ট আইডি বা প্রেসক্রিপশন আইডি যা আপনার সার্ভার রিসিভ করে
-        const response = await fetch(`http://localhost:8080/api/v1/prescriptions/${prescriptionId}/download`, {
+        const response = await fetch(`/api/v1/prescriptions/${prescriptionId}/download`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -429,7 +429,7 @@ async function viewPrescription(prescriptionId) {
     }
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8080/api/v1/prescriptions/${prescriptionId}/download`, {
+        const response = await fetch(`/api/v1/prescriptions/${prescriptionId}/download`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -474,7 +474,7 @@ async function openDoctorDetails(id) {
         // টোকেনটি আপনার ড্যাশবোর্ডের ভেরিয়েবল অনুযায়ী নিন
         const token = localStorage.getItem('accessToken');
 
-        const res = await fetch(`http://localhost:8080/api/v1/doctors/${id}`, {
+        const res = await fetch(`/api/v1/doctors/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -487,7 +487,7 @@ async function openDoctorDetails(id) {
 
         // আপনার ডেটাবেসের ফিল্ড অনুযায়ী ইমেজ পাথ সেট করা
         // স্যাম্পল ডেটাতে specialization অনেক বড়, তাই ডিজাইন সুন্দর রাখতে হবে
-        const img = doc.profilePictureUrl ? `http://localhost:8080${doc.profilePictureUrl}` : 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
+        const img = doc.profilePictureUrl ? `${doc.profilePictureUrl}` : 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png';
 
         content.innerHTML = `
             <div class="flex flex-col md:flex-row gap-8">
